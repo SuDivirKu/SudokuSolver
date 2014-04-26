@@ -97,14 +97,16 @@ def init_board( file_name, checks ):
 # student code
 def backtracking( sudoku ):
     # stop when limit is reached
-    sudoku.checks -= 1
-    if sudoku.checks<0: return False
+    ##sudoku.checks -= 1
+    ##if sudoku.checks<0: return False
     # get an unassigned cell
     row, col = getUnassignedVar( sudoku )
     if (row == -1 and col == -1): return True
     # try different values for a cell
     for val in range(1, sudoku.BoardSize+1):
         sudoku.set_value(row,col,val)
+        sudoku.checks -= 1
+        if sudoku.checks<0: return False
         if iscomplete(sudoku.CurrentGameboard) and backtracking( sudoku ):
             return True
         sudoku.set_value(row,col,0)
@@ -174,14 +176,16 @@ def PrintPoss(poss):    # This function is to display the possibility matrix
 
 def forwardChecking( sudoku, poss ):
     # stop when limit is reached
-    sudoku.checks -= 1
-    if sudoku.checks<0: return False
+    ##sudoku.checks -= 1
+    ##if sudoku.checks<0: return False
     # get an unassigned cell
     row, col = getUnassignedVar( sudoku )
     if (row == -1 and col == -1): return True
     # try different values for a cell
     for val in poss[row][col]:          # Here we loop only through the values in Possibility Matrix
         sudoku.set_value(row,col,val)
+        sudoku.checks -= 1
+        if sudoku.checks<0: return False
         updatePoss(poss,row,col,val)    # Update the Possibility Matrix
         if iscomplete(sudoku.CurrentGameboard) and forwardChecking( sudoku, poss ):
             return True
@@ -190,11 +194,11 @@ def forwardChecking( sudoku, poss ):
     return False
 
 # test code
-testBoard = init_board( '4x4-2.txt', 10000 )
+testBoard = init_board( '4x4-1.txt', 10000 )
 print 'Original Board:\n', testBoard
 #print '\nSolved: %s\n' % backtracking( testBoard )
-#print 'Returned Board:\n', testBoard
+print 'Returned Board:\n', testBoard
 poss = preProcess( testBoard )
-forwardChecking( testBoard,poss )
 print '\nSolved: %s\n' % forwardChecking( testBoard,poss )
 print 'Returned Board:\n', testBoard
+print testBoard.checks
