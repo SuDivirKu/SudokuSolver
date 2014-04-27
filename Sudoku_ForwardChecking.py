@@ -120,6 +120,14 @@ def getUnassignedVar( sudoku ):
 
 """ -------------------------------- Forward Checking ---------------------------------"""
 
+def isConsistent(BoardArray, row, col, val):
+    temp = BoardArray[row][col]
+    BoardArray[row][col] = val
+    result = iscomplete( BoardArray )
+    BoardArray [row][col] = temp
+    return result
+
+
 def createPossMatrix( sudoku ):
     poss = [[range(1,sudoku.BoardSize+1) for row in range(sudoku.BoardSize)] for col in range(sudoku.BoardSize)]
     return poss
@@ -142,23 +150,41 @@ def updatePoss( poss, r, c, val ):
 
 
 
-def AddtoPoss( poss, r, c, val ): # This function will be used to re-add the values to the rows and columns (same as updatePoss, but reverse purpose)
-    size = len(poss)
+def AddtoPoss2( sudoku,poss, r, c, val ): # This function will be used to re-add the values to the rows and columns (same as updatePoss, but reverse purpose)
+    size = sudoku.BoardSize
+    temp_sudoku = sudoku
     for x in range(size):
-        if (x != c and val not in poss[r][x]):
-            poss[r][x].append(val)   # Adds possibilites in the same row
-            poss[r][x].sort()
-        if (x != r and val not in poss[x][c]):
-            poss[x][c].append(val)   # Adds possibilites in the same Column
-            poss[x][c].sort()
+        temp_sudoku.set_value(r,x,val)
+        if isConsistent(temp_sudoku, r, c, val):
+            if (val not in poss[r][x]):
+                poss[r][x].append(val)   # Adds possibilites in the same row
+                poss[r][x].sort()
+            if (val not in poss[x][c]):
+                poss[x][c].append(val)   # Adds possibilites in the same Column
+                poss[x][c].sort()
+            #determine which square the cell is in (Updates within the grid)
+            subsquare = int(math.sqrt(size))
+            SquareRow = r // subsquare
+            SquareCol = c // subsquare
+            for i in range(subsquare):
+                for j in range(subsquare):
+                    if( val not in poss[SquareRow*subsquare + i][SquareCol*subsquare + j]
+                     and (SquareRow*subsquare + i != r) and (SquareCol*subsquare + j != c)):
+                      poss[SquareRow*subsquare + i][SquareCol*subsquare + j].append(val)
+    return poss
+
+def AddtoPoss( sudoku, poss, r, c, val ): # This function will be used to re-add the values to the rows and columns (same as updatePoss, but reverse purpose)
+    size = sudoku.BoardSize 
+    for i in range(size):
+        if (val not in poss[r][i] and isConsistent( sudoku.CurrentGameboard,r,i,val )): poss[r][i].append(val)   # Adds possibilites in the same row
+        if (val not in poss[i][c] and isConsistent( sudoku.CurrentGameboard,i,c,val )): poss[i][c].append(val)   # Adds possibilites in the same Column
         #determine which square the cell is in (Updates within the grid)
         subsquare = int(math.sqrt(size))
         SquareRow = r // subsquare
         SquareCol = c // subsquare
         for i in range(subsquare):
             for j in range(subsquare):
-                if(val not in poss[SquareRow*subsquare + i][SquareCol*subsquare + j]
-                   and (SquareRow*subsquare + i != r) and (SquareCol*subsquare + j != c)):
+                if( val not in poss[SquareRow*subsquare + i][SquareCol*subsquare + j] and isConsistent( sudoku.CurrentGameboard,i,j,val ) ):
                     poss[SquareRow*subsquare + i][SquareCol*subsquare + j].append(val)
     return poss
 
@@ -183,29 +209,38 @@ def forwardChecking( sudoku, poss ):
     ##sudoku.checks -= 1
     ##if sudoku.checks<0: return False
     # get an unassigned cell
-    
     row, col = getUnassignedVar( sudoku )
-    if (row == -1 and col == -1): return True
+    if (row == -1 and col == -1):
+        print "done!"
+        return True
     # try different values for a cell
     for val in poss[row][col]:          # Here we loop only through the values in Possibility Matrix
-        sudoku.set_value(row,col,val)
+        #sudoku.set_value(row,col,val)
+        #updatePoss(poss,row,col,val)    # Update the Possibility Matrix
         sudoku.checks -= 1
         if sudoku.checks<0: return False
-        #updatePoss(poss,row,col,val)    # Update the Possibility Matrix
-        if iscomplete(sudoku.CurrentGameboard) and forwardChecking( sudoku,poss):
+        if isConsistent(sudoku.CurrentGameboard, row, col, val):
+            sudoku.set_value(row,col,val)
             updatePoss(poss,row,col,val)
-            return True
+            #print testBoard
+            #PrintPoss(poss)       
+            if forwardChecking( sudoku,poss): return True
+        #print "-------- before-----"
+        #PrintPoss(poss)
         sudoku.set_value(row,col,0)
+        AddtoPoss( sudoku, poss, row, col, val ) # If the value did not return a solution, we need re-add them to the other elements after removing them earlier
+        #print "------- After ------ "
+        #PrintPoss(poss)
         #poss = preProcess( testBoard )
-        #AddtoPoss( poss, row, col, val ) # If the value did not return a solution, we need re-add them to the other elements after removing them earlier
-       
+        
     return False
 
 # test code
-testBoard = init_board( '4x4-2.txt', 3000000 )
+numchecks = 3000000
+testBoard = init_board( '9x9-1.txt', numchecks )
 print 'Original Board:\n', testBoard
 #print '\nSolved: %s\n' % backtracking( testBoard )
 poss = preProcess( testBoard )
 print '\nSolved: %s\n' % forwardChecking( testBoard,poss )
 print 'Returned Board:\n', testBoard
-print testBoard.checks
+print numchecks - testBoard.checks
