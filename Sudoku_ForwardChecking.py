@@ -127,8 +127,8 @@ def createPossMatrix( sudoku ):
 def updatePoss( poss, r, c, val ):
     size = len(poss)
     for x in range(size):
-        if (x != c and val in poss[r][x]): poss[r][x].remove(val)   # Eliminates repeating possibilites in the same row
-        if (x != r and val in poss[x][c]): poss[x][c].remove(val)   # Eliminates repeating possibilites in the same Column
+        if (x != c and val in poss[r][x] ): poss[r][x].remove(val)   # Eliminates repeating possibilites in the same row
+        if (x != r and val in poss[x][c] ): poss[x][c].remove(val)   # Eliminates repeating possibilites in the same Column
         #determine which square the cell is in (Updates within the grid)
         subsquare = int(math.sqrt(size))
         SquareRow = r // subsquare
@@ -145,8 +145,12 @@ def updatePoss( poss, r, c, val ):
 def AddtoPoss( poss, r, c, val ): # This function will be used to re-add the values to the rows and columns (same as updatePoss, but reverse purpose)
     size = len(poss)
     for x in range(size):
-        if (x != c and val not in poss[r][x]): poss[r][x].append(val)   # Adds possibilites in the same row
-        if (x != r and val not in poss[x][c]): poss[x][c].append(val)   # Adds possibilites in the same Column
+        if (x != c and val not in poss[r][x]):
+            poss[r][x].append(val)   # Adds possibilites in the same row
+            poss[r][x].sort()
+        if (x != r and val not in poss[x][c]):
+            poss[x][c].append(val)   # Adds possibilites in the same Column
+            poss[x][c].sort()
         #determine which square the cell is in (Updates within the grid)
         subsquare = int(math.sqrt(size))
         SquareRow = r // subsquare
@@ -179,6 +183,7 @@ def forwardChecking( sudoku, poss ):
     ##sudoku.checks -= 1
     ##if sudoku.checks<0: return False
     # get an unassigned cell
+    
     row, col = getUnassignedVar( sudoku )
     if (row == -1 and col == -1): return True
     # try different values for a cell
@@ -186,18 +191,20 @@ def forwardChecking( sudoku, poss ):
         sudoku.set_value(row,col,val)
         sudoku.checks -= 1
         if sudoku.checks<0: return False
-        updatePoss(poss,row,col,val)    # Update the Possibility Matrix
-        if iscomplete(sudoku.CurrentGameboard) and forwardChecking( sudoku, poss ):
+        #updatePoss(poss,row,col,val)    # Update the Possibility Matrix
+        if iscomplete(sudoku.CurrentGameboard) and forwardChecking( sudoku,poss):
+            updatePoss(poss,row,col,val)
             return True
         sudoku.set_value(row,col,0)
-        AddtoPoss( poss, row, col, val ) # If the value did not return a solution, we need re-add them to the other elements after removing them earlier
+        #poss = preProcess( testBoard )
+        #AddtoPoss( poss, row, col, val ) # If the value did not return a solution, we need re-add them to the other elements after removing them earlier
+       
     return False
 
 # test code
-testBoard = init_board( '4x4-1.txt', 10000 )
+testBoard = init_board( '4x4-2.txt', 3000000 )
 print 'Original Board:\n', testBoard
 #print '\nSolved: %s\n' % backtracking( testBoard )
-print 'Returned Board:\n', testBoard
 poss = preProcess( testBoard )
 print '\nSolved: %s\n' % forwardChecking( testBoard,poss )
 print 'Returned Board:\n', testBoard
