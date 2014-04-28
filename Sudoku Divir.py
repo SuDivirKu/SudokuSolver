@@ -154,10 +154,8 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
     for i in range( subsquare ):
         for j in range( subsquare ):
             row, col = SquareRow*subsquare + i, SquareCol*subsquare + j
-#            if (currentRow == 0 and currentCol ==7 and value ==1 and action == 'addPoss'):
-#                print row, col, poss[row][col], isConsistent( sudoku.CurrentGameboard, row, col, value )
             if( value in poss[row][col] and action == 'removePoss' ):
-                    poss[row][col].remove(value)
+                poss[row][col].remove(value)
             elif ( action == 'addPoss' and (value not in poss[row][col]) and \
                    isConsistent( sudoku.CurrentGameboard, row, col, value ) ): 
                 poss[row][col].append(value)
@@ -168,33 +166,36 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
 def forwardChecking( sudoku, poss ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 10:
+    if ( time() - start_time ) > 25:
         print 'Time Limit Exceeded \n'
         return False
         
     # get an unassigned cell
     row, col = getUnassignedVar( sudoku )
     if ( row == col == -1 ): return True
-    
+
     # try different values for a cell
-    for value in poss[row][col]:
+    possCopy = copy.deepcopy(poss[row][col])
+    for value in possCopy:
         sudoku.numChecks += 1
+        
         if isConsistent( sudoku.CurrentGameboard, row, col, value ):
             sudoku.set_value( row, col, value )
-            poss = updatePoss( sudoku, poss, row, col, value, 'removePoss' )
-#            if (value not in poss[row][col]): poss[row][col].append(value)
+            updatePoss( sudoku, poss, row, col, value, 'removePoss' )
             if ( forwardChecking( sudoku, poss ) ): return True
 
         sudoku.set_value( row, col, 0 )
-        poss = updatePoss( sudoku, poss, row, col, value, 'addPoss' )
+        updatePoss( sudoku, poss, row, col, value, 'addPoss' )
+                    
     return False
 
 """ -------------------------------- Test Code ---------------------------------"""
-#path = 'ExtraExamples/4x4/4x4.2.sudoku' 
-path = 'ExtraExamples/9x9/9x9.1.sudoku' 
-#path = 'ExtraExamples/16x16/16x16.1.sudoku' 
+
+size, num = '16', '1'
+path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku' % (size,size,size,size,num)
 
 """ ------- Backtracking -----------"""
+print 'Backtracking'
 testBoard = init_board( path )
 print 'Original Board: \n %s \n' % testBoard
 
@@ -210,6 +211,7 @@ print 'Time elapsed: %.2f seconds \n' % elapsed_time
 
 
 """ ------- Forward Checking -----------"""
+print 'Forward Checking'
 testBoard = init_board( path )
 print 'Original Board: \n %s \n' % testBoard
 
@@ -223,40 +225,3 @@ print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
 """------------------------------------"""
-
-"""
-
-testBoard = init_board( path )
-print 'Original Board: \n %s \n' % testBoard
-
-start_time = time()
-poss1 = initialPoss( testBoard )
-#printPoss(poss1)
-
-row = 0
-col = 7
-value = 1
-
-# set value
-testBoard.set_value( row, col, value )
-poss2 = updatePoss( testBoard, copy.deepcopy(poss1), row, col, value , 'removePoss' )
-#printPoss(poss2)
-
-# remove value
-testBoard.set_value( row, col, 0 )
-poss3 = updatePoss( testBoard, copy.deepcopy(poss2), row, col, value , 'addPoss' )
-#printPoss(poss3)
-
-# check
-for i in range(9):
-    for j in range(9):
-        if not set(poss1[i][j])==set(poss3[i][j]):
-            print i,j
-        
-"""
-        
-
-
-
-    
-
