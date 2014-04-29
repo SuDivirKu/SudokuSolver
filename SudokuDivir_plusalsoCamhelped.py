@@ -339,11 +339,11 @@ def forwardCheckingMCVLCV( sudoku, poss ):
 
 """ -------------------------------- Test Code ---------------------------------"""
 
-size, num = '9', '1'
+size, num = '4', '3'
 #test with 16.4 or 16.8
-path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku' % (size,size,size,size,num)
+path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku.txt' % (size,size,size,size,num)
 
-"""------- Backtracking -----------
+"""------- Backtracking -----------"""
 print '--------Backtracking--------'
 testBoard = init_board( path )
 #print 'Original Board: \n %s \n' % testBoard
@@ -356,10 +356,10 @@ elapsed_time = time() - start_time
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
---------------------------------"""
+"""--------------------------------"""
 
 
-""" ------- Forward Checking -----------
+""" ------- Forward Checking -----------"""
 print '--------Forward Checking--------'
 testBoard = init_board( path )
 #print 'Original Board: \n %s \n' % testBoard
@@ -373,7 +373,7 @@ elapsed_time = time() - start_time
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
-------------------------------------"""
+"""------------------------------------"""
 
 
 """ ------- MCV -----------"""
@@ -392,7 +392,7 @@ print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
 """------------------------------------"""
 
-""" ------- MCV and LCV -----------"""
+""" ------- MCV and LCV -----------
 print '---------MCV and LCV--------'
 testBoard = init_board( path )
 #print 'Original Board: \n %s \n' % testBoard
@@ -406,6 +406,6 @@ elapsed_time = time() - start_time
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
-"""------------------------------------"""
+------------------------------------"""
 
 
