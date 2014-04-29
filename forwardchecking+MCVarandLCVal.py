@@ -289,7 +289,7 @@ def forwardChecking(sudoku, poss):
 
 # test code
 numchecks = 3000000
-testBoard = init_board('4x4-1.txt', numchecks)
+testBoard = init_board('4x4.1.txt', numchecks)
 print 'Original Board:\n', testBoard
 #print '\nSolved: %s\n' % backtracking( testBoard )
 poss = preProcess(testBoard)
