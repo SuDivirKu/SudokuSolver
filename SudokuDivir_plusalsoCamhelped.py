@@ -160,49 +160,7 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
                    isConsistent( sudoku.CurrentGameboard, row, col, value ) ): 
                 poss[row][col].append(value)
     return poss
-#----------------MCV and LCVal-----------------
-def mostConstrainedVariable(poss, sudoku):
-    size = len(poss)
-    smallest = 9
-    for x in range(size):
-        for y in range(size):
-            if ((len(poss[x][y])) == 1):
-                    sudoku.set_value(x,y,(poss[x][y]))
-            if ((len(poss[x][y]) < smallest) and (len(poss[x][y]) > 1)):
-                smallest = len(poss[x][y])
-                tempx = x
-                tempy = y
 
-    return tempx, tempy
-
-
-def leastContrainingValue(poss, x, y):
-    minConst = 0
-    leastVal = 0
-    count = 0
-    leastConstVal = 0
-    size = len(poss)
-    subsquare = int(math.sqrt(size))
-    for i in range(1, size + 1, 1):
-        if i in poss[x][y]:
-            for j in range(0, size, 1):
-                minConst = minConst + (poss[x][j]).count(i)
-                minConst = minConst + (poss[j][y]).count(i)
-            topleftx = (x - (x % subsquare))
-            toplefty = (y - (y % subsquare))
-            for k in range(subsquare):
-                for m in range(subsquare):
-                    minConst = minConst + (poss[topleftx + k][toplefty + m].count(i))
-            if count == 0:
-                leastVal = minConst
-                count+1
-                leastConstVal =i
-            if count > 0 and (minConst < leastVal):
-                leastVal = minConst
-                leastConstVal = i
-
-    return leastConstVal
-#-------------------------------------------
 
 def forwardChecking( sudoku, poss ):
     # stop when time is maxed out
@@ -229,6 +187,83 @@ def forwardChecking( sudoku, poss ):
         updatePoss( sudoku, poss, row, col, value, 'addPoss' )
                     
     return False
+
+#----------------MCV--------------------------------------
+def mostConstrainedVariable(poss, sudoku):
+    size = len(poss)
+    smallest = 16
+    for x in range(size):
+        for y in range(size):
+            if ((len(poss[x][y])) == 1):
+                    sudoku.set_value(x,y,(poss[x][y]))
+            if ((len(poss[x][y]) < smallest) and (len(poss[x][y]) > 1)):
+                smallest = len(poss[x][y])
+                tempx = x
+                tempy = y
+
+    return tempx, tempy
+
+"""def getUnassignedVar( sudoku ):
+    for row in range(sudoku.BoardSize):
+        for col in range(sudoku.BoardSize):
+            if ( sudoku.CurrentGameboard[row][col] == 0 ): return row, col
+    return -1, -1"""
+
+def forwardCheckingMCV( sudoku, poss ):
+    # stop when time is maxed out
+    global start_time
+    if ( time() - start_time ) > 25:
+        print 'Time Limit Exceeded \n'
+        return False
+        
+    # get an unassigned cell
+    row, col = mostConstrainedVariable( poss, sudoku )
+    if ( row == col == -1 ): return True
+
+    # try different values for a cell
+    possCopy = copy.deepcopy(poss[row][col])
+    for value in possCopy:
+        sudoku.numChecks += 1
+        
+        if isConsistent( sudoku.CurrentGameboard, row, col, value ):
+            sudoku.set_value( row, col, value )
+            updatePoss( sudoku, poss, row, col, value, 'removePoss' )
+            if ( forwardCheckingMCV( sudoku, poss ) ): return True
+
+        sudoku.set_value( row, col, 0 )
+        updatePoss( sudoku, poss, row, col, value, 'addPoss' )
+                    
+    return False
+
+
+#--------------MCV and LCVAl------------------------------
+def leastContrainingValue(poss, x, y):
+    minConst = 0
+    leastVal = 0
+    count = 0
+    leastConstVal = 0
+    size = len(poss)
+    subsquare = int(math.sqrt(size))
+    for i in range(1, size + 1, 1):
+        if i in poss[x][y]:
+            for j in range(0, size, 1):
+                minConst = minConst + (poss[x][j]).count(i)
+                minConst = minConst + (poss[j][y]).count(i)
+            topleftx = (x - (x % subsquare))
+            toplefty = (y - (y % subsquare))
+            for k in range(subsquare):
+                for m in range(subsquare):
+                    minConst = minConst + (poss[topleftx + k][toplefty + m].count(i))
+            if count == 0:
+                leastVal = minConst
+                count+1
+                leastConstVal =i
+            if count > 0 and (minConst < leastVal):
+                leastVal = minConst
+                leastConstVal = i
+
+    return leastConstVal
+
 
 """ -------------------------------- Test Code ---------------------------------"""
 
@@ -266,3 +301,21 @@ print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
 """------------------------------------"""
+
+
+""" ------- MCV -----------"""
+print 'MCV'
+testBoard = init_board( path )
+print 'Original Board: \n %s \n' % testBoard
+
+start_time = time()
+poss = initialPoss( testBoard )
+result = forwardCheckingMCV( testBoard, poss )
+elapsed_time = time() - start_time
+
+print 'MCV, returned Board: \n %s \n' % testBoard
+print 'Solved: %s' % result
+print 'Number of checks: %d' % testBoard.numChecks
+print 'Time elapsed: %.2f seconds \n' % elapsed_time
+"""------------------------------------"""
+
