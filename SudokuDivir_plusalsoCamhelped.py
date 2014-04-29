@@ -90,7 +90,7 @@ def getUnassignedVar( sudoku ):
 def backtracking( sudoku ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 300:
+    if ( time() - start_time ) > 200:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -165,7 +165,7 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
 def forwardChecking( sudoku, poss ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 300:
+    if ( time() - start_time ) > 1800:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -225,7 +225,7 @@ def mostConstrainedVariable(poss, sudoku):
 def forwardCheckingMCV( sudoku, poss ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 300:
+    if ( time() - start_time ) > 1800:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -339,7 +339,7 @@ def forwardCheckingMCVLCV( sudoku, poss ):
 
 """ -------------------------------- Test Code ---------------------------------"""
 
-size, num = '4', '3'
+size, num = '16', '21'
 #test with 16.4 or 16.8
 path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku.txt' % (size,size,size,size,num)
 
