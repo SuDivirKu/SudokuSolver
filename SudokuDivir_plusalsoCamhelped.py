@@ -189,11 +189,13 @@ def forwardChecking( sudoku, poss ):
     return False
 
 #----------------MCV--------------------------------------
+"""
 def mostConstrainedVariable(poss, sudoku):
     size = len(poss)
     smallest = 16
     for x in range(size):
         for y in range(size):
+            tempx, tempy = x, y
             if ((len(poss[x][y])) == 1):
                     sudoku.set_value(x,y,(poss[x][y]))
             if ((len(poss[x][y]) < smallest) and (len(poss[x][y]) > 1)):
@@ -202,6 +204,17 @@ def mostConstrainedVariable(poss, sudoku):
                 tempy = y
 
     return tempx, tempy
+"""
+def mostConstrainedVariable(poss, sudoku):
+    size = maxPoss = len(poss)
+    rowMCV, colMCV = -1, -1
+    for row in range(size):
+        for col in range(size):
+            if (sudoku.CurrentGameboard[row][col] == 0 and len(poss[row][col]) < maxPoss):
+                rowMCV, colMCV = row, col
+                maxPoss = len(poss[row][col])
+    return rowMCV, colMCV
+                              
 
 """def getUnassignedVar( sudoku ):
     for row in range(sudoku.BoardSize):
@@ -270,7 +283,7 @@ def leastContrainingValue(poss, x, y):
 size, num = '16', '1'
 path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku' % (size,size,size,size,num)
 
-""" ------- Backtracking -----------"""
+""" ------- Backtracking -----------
 print 'Backtracking'
 testBoard = init_board( path )
 print 'Original Board: \n %s \n' % testBoard
@@ -283,10 +296,10 @@ print 'Backtracking, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
-""" --------------------------------"""
+ --------------------------------"""
 
 
-""" ------- Forward Checking -----------"""
+""" ------- Forward Checking -----------
 print 'Forward Checking'
 testBoard = init_board( path )
 print 'Original Board: \n %s \n' % testBoard
@@ -300,7 +313,7 @@ print 'Forward Checking, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
-"""------------------------------------"""
+------------------------------------"""
 
 
 """ ------- MCV -----------"""
