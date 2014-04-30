@@ -90,7 +90,7 @@ def getUnassignedVar( sudoku ):
 def backtracking( sudoku ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 10:
+    if ( time() - start_time ) > 600:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -166,7 +166,7 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
 def forwardChecking( sudoku, poss ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 25:
+    if ( time() - start_time ) > 120:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -365,36 +365,36 @@ def MCV_Most_Const_Var (sudoku, poss):
 
 """ -------------------------------- Test Code ---------------------------------"""
 
-size, num = '16', '5'
+size, num = '16', '1'
 path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku' % (size,size,size,size,num)
 
-""" ------- Backtracking -----------
+""" ------- Backtracking -----------"""
 print '--------Backtracking--------'
 testBoard = init_board( path )
-#print 'Original Board: \n %s \n' % testBoard
+print 'Original Board: \n %s \n' % testBoard
 
 start_time = time()
 result = backtracking( testBoard )
 elapsed_time = time() - start_time
 
-#print 'Backtracking, returned Board: \n %s \n' % testBoard
+print 'Backtracking, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
---------------------------------"""
+"""-------------------------------"""
 
 
 """ ------- Forward Checking -----------"""
 print '--------Forward Checking--------'
 testBoard = init_board( path )
-#print 'Original Board: \n %s \n' % testBoard
+print 'Original Board: \n %s \n' % testBoard
 
 start_time = time()
 poss = initialPoss( testBoard )
 result = forwardChecking( testBoard, poss )
 elapsed_time = time() - start_time
 
-#print 'Forward Checking, returned Board: \n %s \n' % testBoard
+print 'Forward Checking, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
@@ -404,7 +404,7 @@ print 'Time elapsed: %.2f seconds \n' % elapsed_time
 """ ------------- MCV+ MRV ------------------"""
 print '--------MCV+MRV--------'
 testBoard = init_board( path )
-#print 'Original Board: \n %s \n' % testBoard
+print 'Original Board: \n %s \n' % testBoard
 
 start_time = time()
 poss = initialPoss( testBoard )
@@ -412,7 +412,7 @@ result = MCV(testBoard, poss)
 elapsed_time = time() - start_time
 
 
-#print 'MCV, returned Board: \n %s \n' % testBoard
+print 'MCV, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
@@ -422,7 +422,7 @@ print 'Time elapsed: %.2f seconds \n' % elapsed_time
 """ ----------- MCV + MRV +LCV -------------"""
 print '--------MCV + MRV + LCV--------'
 testBoard = init_board( path )
-#print 'Original Board: \n %s \n' % testBoard
+print 'Original Board: \n %s \n' % testBoard
 
 start_time = time()
 poss = initialPoss( testBoard )
@@ -430,7 +430,7 @@ result = MCV_LCV(testBoard, poss)
 elapsed_time = time() - start_time
 
 
-#print 'MCV+LCV, returned Board: \n %s \n' % testBoard
+print 'MCV+LCV, returned Board: \n %s \n' % testBoard
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time

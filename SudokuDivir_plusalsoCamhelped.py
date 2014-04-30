@@ -165,7 +165,7 @@ def updatePoss( sudoku, poss, currentRow, currentCol, value, action ):
 def forwardChecking( sudoku, poss ):
     # stop when time is maxed out
     global start_time
-    if ( time() - start_time ) > 1800:
+    if ( time() - start_time ) > 300:
         print 'Time Limit Exceeded \n'
         return False
         
@@ -339,11 +339,11 @@ def forwardCheckingMCVLCV( sudoku, poss ):
 
 """ -------------------------------- Test Code ---------------------------------"""
 
-size, num = '16', '21'
+size, num = '16', '8'
 #test with 16.4 or 16.8
-path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku.txt' % (size,size,size,size,num)
+path = 'ExtraExamples/%sx%s/%sx%s.%s.sudoku' % (size,size,size,size,num)
 
-"""------- Backtracking -----------"""
+"""------- Backtracking -----------
 print '--------Backtracking--------'
 testBoard = init_board( path )
 #print 'Original Board: \n %s \n' % testBoard
@@ -356,7 +356,7 @@ elapsed_time = time() - start_time
 print 'Solved: %s' % result
 print 'Number of checks: %d' % testBoard.numChecks
 print 'Time elapsed: %.2f seconds \n' % elapsed_time
-"""--------------------------------"""
+--------------------------------"""
 
 
 """ ------- Forward Checking -----------"""
